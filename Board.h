@@ -14,8 +14,8 @@ class Board
 		int totalMines;
 		int remainingMines;
 
-		std::vector<std::vector<Tile>> visibleGrid;
-		std::vector<std::vector<Tile>> trueGrid;
+		std::vector<std::vector<Tile*>> visibleGrid; //discovered tiles 
+		std::vector<std::vector<Tile*>> trueGrid; //true value of each tile, unknown to solver
 
 		void InitializeBoard(int h, int w, int n);
 
