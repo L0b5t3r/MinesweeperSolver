@@ -12,4 +12,5 @@ int main()
 
     result = solver.Run();
     solver.PrintBoard();
+    int i;
 }

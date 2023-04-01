@@ -13,7 +13,6 @@ bool Solver::Run()
 	int startX = rand() % board.height;
 	int startY = rand() % board.width;
 
-	bool safe = true;
 
 	while (board.trueGrid[startX][startY]->value != 0) //ensure starts on 0 spot
 	{
@@ -25,7 +24,7 @@ bool Solver::Run()
 
 	bool timeout = true; //timeout loop if no action occurred, stuck
 	
-	while (safe) //main solving loop, pass all tiles and see if action can be taken
+	while (true) //main solving loop, pass all tiles and see if action can be taken
 	{
 		timeout = true;
 		for (int x = 0; x < board.height; x++)
@@ -34,19 +33,27 @@ bool Solver::Run()
 			{
 				Tile* curTile = board.visibleGrid[x][y];
 
+				if (board.remainingMines <= 0) //all mines found
+					return true;
+
 				if (curTile->state == TileState::cleared)
 				{
+					int markedCount = 0;
 
 					//first check if tile has the same number of unknown near tiles as its value, mark tiles
 					std::vector<Tile*> tilesLeft = std::vector<Tile*>();
 					for (Tile* t : curTile->near)
 					{
-						if (t != nullptr && t->state == TileState::unknown)
+						if (t != nullptr && (t->state == TileState::unknown || t->state == TileState::marked))
 						{
 							tilesLeft.push_back(t);
+							
+							if (t->state == TileState::marked) //count marked for next check
+								markedCount++; 
 						}
 					}
-					if (tilesLeft.size() == curTile->value) 
+
+					if (tilesLeft.size() == curTile->value) //action, flag surrounding tiles
 					{
 						for (Tile* t : tilesLeft)
 						{
@@ -54,17 +61,36 @@ bool Solver::Run()
 							if (!check) //bad flag
 								return false;
 						}
-						timeout = false;
+						curTile->state = TileState::finished;
+						timeout = false; 
+						continue; //tile finished, no other checks can be made
 					}
 
 
 					//check if tile has value number of marked mines on near tiles, clear rest
+					if (markedCount == curTile->value)
+					{
+						for (Tile* t : tilesLeft)
+						{
+							if (t->state == TileState::unknown)
+							{
+								bool check = board.click(t->x, t->y);
+								if (!check) //if bomb clicked
+									return false;
+							}
+						}
+						curTile->state = TileState::finished;
+						timeout = false;
+						continue;
+					}
+
 
 				}
 			}
 		}
 		if (timeout)
 		{
+			board.PrintVisibleBoard();
 			return false;
 		}
 	}

@@ -122,6 +122,7 @@ bool Board::click(int x, int y) //"click" the selected tile that is believed to 
 	{
 		clear0s(x, y);
 	}
+	return true;
 }
 
 bool Board::flag(int x, int y) //flag the selected tile as a mine, instant lose if wrong for this implementation
@@ -131,7 +132,12 @@ bool Board::flag(int x, int y) //flag the selected tile as a mine, instant lose 
 		return false;
 	}
 
-	visibleGrid[x][y]->state = TileState::marked;
+	if (visibleGrid[x][y]->state == TileState::unknown)
+	{
+		remainingMines--;
+		visibleGrid[x][y]->state = TileState::marked;
+	}
+	return true;
 }
 
 void Board::clear0s(int x, int y) //clear 0 tiles adjacent to the selected 0, recursive
@@ -159,15 +165,52 @@ void Board::clear0s(int x, int y) //clear 0 tiles adjacent to the selected 0, re
 void Board::PrintTrueBoard()
 {
 	//system("cls");
+
 	std::cout << "Total Mines: " << totalMines << "\t\t Remaining Mines: " << remainingMines << std::endl;
 	for (int i = 0; i < height; i++)
 	{
 		for (int o = 0; o < width; o++)
 		{
+			/*
 			if(trueGrid[i][o]->value == -1)
 				std::cout << " m ";
 			else
 				std::cout << " " << trueGrid[i][o]->value << " ";
+				*/
+
+			switch (trueGrid[i][o]->value)
+			{
+			case -1:
+				std::cout << "\x1B[31m m \x1B[0m"; //red
+				break;
+			case 0:
+				std::cout << "\x1B[97m 0 \x1B[0m"; //white
+				break;
+			case 1:
+				std::cout << "\x1B[96m 1 \x1B[0m"; //cyan
+				break;
+			case 2:
+				std::cout << "\x1B[92m 2 \x1B[0m"; //bright green
+				break;
+			case 3:
+				std::cout << "\x1B[91m 3 \x1B[0m"; //bright red
+				break;
+			case 4:
+				std::cout << "\x1B[34m 4 \x1B[0m"; //blue
+				break;
+			case 5:
+				std::cout << "\x1B[32m 5 \x1B[0m"; //green
+				break;
+			case 6:
+				std::cout << "\x1B[35m 6 \x1B[0m"; //magenta
+				break;
+			case 7:
+				std::cout << "\x1B[94m 7 \x1B[0m"; //bright blue
+				break;
+			case 8:
+				std::cout << "\x1B[33m 8 \x1B[0m"; //yellow
+				break;
+			}
 			
 		}
 		std::cout << std::endl << std::endl;
@@ -187,14 +230,41 @@ void Board::PrintVisibleBoard()
 			case TileState::unknown:
 				std::cout << " x ";
 				break;
-			case TileState::cleared:
-				std::cout << " " << visibleGrid[i][o]->value << " ";
-				break;
 			case TileState::marked:
-				std::cout << " m ";
+				std::cout << "\x1B[31m m \x1B[0m"; //red
 				break;
+			case TileState::cleared:
 			case TileState::finished:
-				std::cout << " " << visibleGrid[i][o]->value << " ";
+				switch (trueGrid[i][o]->value)
+				{
+				case 0:
+					std::cout << "\x1B[97m 0 \x1B[0m"; //white
+					break;
+				case 1:
+					std::cout << "\x1B[96m 1 \x1B[0m"; //cyan
+					break;
+				case 2:
+					std::cout << "\x1B[92m 2 \x1B[0m"; //bright green
+					break;
+				case 3:
+					std::cout << "\x1B[91m 3 \x1B[0m"; //bright red
+					break;
+				case 4:
+					std::cout << "\x1B[34m 4 \x1B[0m"; //blue
+					break;
+				case 5:
+					std::cout << "\x1B[32m 5 \x1B[0m"; //green
+					break;
+				case 6:
+					std::cout << "\x1B[35m 6 \x1B[0m"; //magenta
+					break;
+				case 7:
+					std::cout << "\x1B[94m 7 \x1B[0m"; //bright blue
+					break;
+				case 8:
+					std::cout << "\x1B[33m 8 \x1B[0m"; //yellow
+					break;
+				}
 				break;
 			}
 
