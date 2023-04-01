@@ -5,16 +5,28 @@ Tile::Tile()
 	value = 0;
 	near = { up, upRight, right, downRight, down, downLeft, left, upLeft };
 	state = TileState::unknown;
+	x = y = 0;
 }
 
 Tile::~Tile()
 {}
 
-Tile::Tile(int v)
+Tile::Tile(int x, int y)
+{
+	value = 0;
+	near = { up, upRight, right, downRight, down, downLeft, left, upLeft };
+	state = TileState::unknown;
+	this->x = x;
+	this->y = y;
+}
+
+Tile::Tile(int x, int y, int v)
 {
 	value = v;
 	near = { up, upRight, right, downRight, down, downLeft, left, upLeft };
 	state = TileState::unknown;
+	this->x = x;
+	this->y = y;
 }
 
 

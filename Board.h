@@ -4,8 +4,8 @@
 class Board
 {
 	private:
-		int height, width;
-
+		
+		void setNearTiles(int i, int o);
 
 	public:
 		Board();
@@ -13,11 +13,17 @@ class Board
 
 		int totalMines;
 		int remainingMines;
+		int height, width;
 
 		std::vector<std::vector<Tile*>> visibleGrid; //discovered tiles 
 		std::vector<std::vector<Tile*>> trueGrid; //true value of each tile, unknown to solver
 
 		void InitializeBoard(int h, int w, int n);
+
+		bool click(int x, int y);
+		bool flag(int x, int y);
+
+		void clear0s(int x, int y);
 
 		void PrintTrueBoard();
 		void PrintVisibleBoard();

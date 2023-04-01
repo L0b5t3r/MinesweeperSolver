@@ -16,11 +16,13 @@ class Tile
 
 	public:
 		Tile();
-		Tile(int v);
+		Tile(int x, int y);
+		Tile(int x, int y, int v);
 		~Tile();
 
 		int value;
 		TileState state;
+		int x, y;
 
 		Tile* up;
 		Tile* upRight;

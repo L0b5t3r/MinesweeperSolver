@@ -12,9 +12,9 @@ class Solver
 		Solver(Board b);
 		~Solver();
 
-		void Run();
+		bool Run();
 
 		void CreateBoard(int h, int w, int n);
-
+		void PrintBoard();
 };
 
