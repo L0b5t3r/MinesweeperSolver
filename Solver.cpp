@@ -23,6 +23,7 @@ bool Solver::Run()
 	board.click(startX, startY);
 
 	bool timeout = true; //timeout loop if no action occurred, stuck
+	int timeoutCount = 0;
 	
 	while (true) //main solving loop, pass all tiles and see if action can be taken
 	{
@@ -85,10 +86,26 @@ bool Solver::Run()
 					}
 
 
+					
+
+					//more complex cases when ambiguity for one can provide some info for a neighbooring tile
+
+
+
+
+
 				}
 			}
 		}
 		if (timeout)
+		{		
+			timeoutCount++;
+		}
+		else
+		{
+			timeoutCount = 0;
+		}
+		if (timeoutCount >= 3) //give solver a few more cycles incase of weird cases maybe
 		{
 			board.PrintVisibleBoard();
 			return false;

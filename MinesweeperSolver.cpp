@@ -8,7 +8,7 @@ int main()
     Solver solver = Solver();
     bool result = false;
 
-    solver.CreateBoard(10, 10, 20);
+    solver.CreateBoard(10, 10, 15);
 
     result = solver.Run();
     solver.PrintBoard();

@@ -9,6 +9,9 @@ enum TileState
 
 #pragma once
 #include <vector>
+
+class AmbigField; //forward declaration to avoid circular dependency, probably good to work out of eventually
+
 class Tile
 {
 	private:
@@ -35,8 +38,12 @@ class Tile
 
 		std::vector<Tile*> near;
 
+		AmbigField* field;
 
 		int countNearMines();
+
+		int countNearFlagged();
+		int countNearUnknown();
 
 		void updateNearTiles();
 };
