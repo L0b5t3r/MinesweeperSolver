@@ -10,7 +10,14 @@ Tile::Tile()
 }
 
 Tile::~Tile()
-{}
+{
+	for (Tile* t : near)
+	{
+		delete t;
+	}
+	delete field;
+
+}
 
 Tile::Tile(int x, int y)
 {

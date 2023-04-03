@@ -105,7 +105,7 @@ bool Solver::Run()
 
 					//more complex cases when ambiguity for one can provide some info for a neighbooring tile
 
-					if (curTile->countNearUnknown() - curTile->value == 1) //one more tile than needed, ambiguous position
+					if (curTile->countNearUnknown() - (curTile->value - curTile->countNearFlagged() ) == 1) //one more tile than needed, ambiguous position
 					{
 						curTile->createAmbigField();
 						timeout = false;
@@ -141,8 +141,8 @@ bool Solver::Run()
 								//if ambiguous segment would complete flagged 
 								if (curTile->countNearFlagged() + 1 == curTile->value)
 								{
-									std::cout << "before trying to clear around " << curTile->x << ", " << curTile->y << std::endl;
-									board.PrintVisibleBoard();
+									//std::cout << "before trying to clear around " << curTile->x << ", " << curTile->y << std::endl;
+									//board.PrintVisibleBoard();
 									for (Tile* t : curTile->near)
 									{
 										if (t != nullptr && t != inField[0] && t != inField[1] && t->state == TileState::unknown) //if not part of ambigField
@@ -164,8 +164,8 @@ bool Solver::Run()
 									//if remaining unknown + already flagged + the ambiguous fill, flag remaining unknown
 									for (Tile* t : curTile->near)
 									{
-										std::cout << "before trying to flag around " << curTile->x << ", " << curTile->y << std::endl;
-										board.PrintVisibleBoard();
+										//std::cout << "before trying to flag around " << curTile->x << ", " << curTile->y << std::endl;
+										//board.PrintVisibleBoard();
 										if (t != nullptr && t != inField[0] && t != inField[1] && t->state == TileState::unknown) //if not part of ambigField
 										{
 											bool check = board.flag(t->x, t->y);
@@ -203,7 +203,7 @@ bool Solver::Run()
 		}
 		if (timeoutCount >= 3) //give solver a few more cycles incase of weird cases maybe
 		{
-			board.PrintVisibleBoard();
+			std::cout << "Solver timed out, unable to take more steps" << std::endl;
 			return false;
 		}
 	}
@@ -214,8 +214,6 @@ bool Solver::Run()
 void Solver::CreateBoard(int h, int w, int n)
 {
 	board.InitializeBoard(h, w, n);
-	board.PrintVisibleBoard();
-	board.PrintTrueBoard();
 }
 
 void Solver::PrintBoard()

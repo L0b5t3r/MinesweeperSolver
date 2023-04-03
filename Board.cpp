@@ -168,20 +168,12 @@ void Board::clear0s(int x, int y) //clear 0 tiles adjacent to the selected 0, re
 
 void Board::PrintTrueBoard()
 {
-	//system("cls");
-
+	std::cout << "True values Board" << std::endl;
 	std::cout << "Total Mines: " << totalMines << "\t\t Remaining Mines: " << remainingMines << std::endl;
 	for (int i = 0; i < height; i++)
 	{
 		for (int o = 0; o < width; o++)
 		{
-			/*
-			if(trueGrid[i][o]->value == -1)
-				std::cout << " m ";
-			else
-				std::cout << " " << trueGrid[i][o]->value << " ";
-				*/
-
 			switch (trueGrid[i][o]->value)
 			{
 			case -1:
@@ -223,7 +215,7 @@ void Board::PrintTrueBoard()
 
 void Board::PrintVisibleBoard()
 {
-	//system("cls");
+	std::cout << "Player/Solver Board" << std::endl;
 	std::cout << "Total Mines: " << totalMines << "\t\t Remaining Mines: " << remainingMines << std::endl;
 	for (int i = 0; i < height; i++)
 	{
@@ -277,4 +269,14 @@ void Board::PrintVisibleBoard()
 	}
 }
 
-Board::~Board() {}
+Board::~Board()
+{
+	for (int i = 0; i < height; i++)
+	{
+		for (int o = 0; o < width; o++)
+		{
+			delete trueGrid[i][o];
+			delete visibleGrid[i][o];
+		}
+	}
+}
