@@ -64,6 +64,29 @@ int Tile::countNearUnknown() //count unknown tiles from visible board
 	return count;
 }
 
+
+void Tile::createAmbigField()
+{
+	field = new AmbigField();
+
+	for (Tile* t : near)
+	{
+		if (t != nullptr && t->state == TileState::unknown) //add unknown tiles to Ambig field
+		{
+			field->tiles.push_back(t);
+		}
+	}
+	field->count = field->tiles.size();
+	field->mineCount = value - countNearFlagged();
+}
+
+void Tile::removeAmbigField() 
+{
+	delete field;
+	field = nullptr;
+}
+
+
 void Tile::updateNearTiles()
 {
 	near = { up, upRight, right, downRight, down, downLeft, left, upLeft };

@@ -5,6 +5,7 @@ AmbigField::AmbigField()
 {
 	count = 0;
 	tiles = std::vector<Tile*>();
+	mineCount = 0;
 }
 
 

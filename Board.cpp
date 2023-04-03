@@ -223,7 +223,7 @@ void Board::PrintTrueBoard()
 
 void Board::PrintVisibleBoard()
 {
-	system("cls");
+	//system("cls");
 	std::cout << "Total Mines: " << totalMines << "\t\t Remaining Mines: " << remainingMines << std::endl;
 	for (int i = 0; i < height; i++)
 	{

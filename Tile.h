@@ -45,6 +45,9 @@ class Tile
 		int countNearFlagged();
 		int countNearUnknown();
 
+		void createAmbigField();
+		void removeAmbigField();
+
 		void updateNearTiles();
 };
 

@@ -1,5 +1,8 @@
 #pragma once
 #include "Board.h"
+#include "AmbigField.h"
+#include <iostream>
+
 class Solver
 {
 	private:
