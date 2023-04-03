@@ -27,6 +27,10 @@ void Board::InitializeBoard(int h, int w, int n)
 		{
 			trueGrid[rh][rw] = new Tile(rh, rw, -1);
 		}
+		else
+		{
+			i--; //dont count if mine not placed
+		}
 	}
 
 	for (int i = 0; i < height; i++) //initialize remaining tiles count and local tile pointers
@@ -219,7 +223,7 @@ void Board::PrintTrueBoard()
 
 void Board::PrintVisibleBoard()
 {
-	system("cls");
+	//system("cls");
 	std::cout << "Total Mines: " << totalMines << "\t\t Remaining Mines: " << remainingMines << std::endl;
 	for (int i = 0; i < height; i++)
 	{

@@ -1,4 +1,5 @@
 #include "Tile.h"
+#include "AmbigField.h"
 
 Tile::Tile()
 {
@@ -30,7 +31,7 @@ Tile::Tile(int x, int y, int v)
 }
 
 
-int Tile::countNearMines()
+int Tile::countNearMines() //count actual mines from true board
 {
 	int count = 0;
 	for (Tile* t : near)
@@ -40,6 +41,51 @@ int Tile::countNearMines()
 	}
 	return count;
 }
+
+int Tile::countNearFlagged() //count flagged tiles from visible board
+{
+	int count = 0;
+	for (Tile* t : near)
+	{
+		if (t != nullptr && t->state == TileState::marked)
+			count++;
+	}
+	return count;
+}
+
+int Tile::countNearUnknown() //count unknown tiles from visible board
+{
+	int count = 0;
+	for (Tile* t : near)
+	{
+		if (t != nullptr && t->state == TileState::unknown)
+			count++;
+	}
+	return count;
+}
+
+
+void Tile::createAmbigField()
+{
+	field = new AmbigField();
+
+	for (Tile* t : near)
+	{
+		if (t != nullptr && t->state == TileState::unknown) //add unknown tiles to Ambig field
+		{
+			field->tiles.push_back(t);
+		}
+	}
+	field->count = field->tiles.size();
+	field->mineCount = value - countNearFlagged();
+}
+
+void Tile::removeAmbigField() 
+{
+	delete field;
+	field = nullptr;
+}
+
 
 void Tile::updateNearTiles()
 {
