@@ -6,10 +6,10 @@
 class Solver
 {
 	private:
-
+		Board board;
 
 	public:
-		Board board;
+		
 
 		Solver();
 		Solver(Board b);
@@ -18,6 +18,7 @@ class Solver
 		bool Run();
 
 		void CreateBoard(int h, int w, int n);
+		void ResetBoard();
 		void PrintBoard();
 };
 

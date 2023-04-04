@@ -62,6 +62,23 @@ void Board::InitializeBoard(int h, int w, int n)
 	}
 }
 
+void Board::ResetVisibleBoard() //reset visible board to be run again
+{
+	remainingMines = totalMines;
+	for (int i = 0; i < height; i++) 
+	{
+		for (int o = 0; o < width; o++)
+		{
+			visibleGrid[i][o]->state = TileState::unknown;
+			if (visibleGrid[i][o]->field != nullptr)
+			{
+				delete visibleGrid[i][o]->field;
+				visibleGrid[i][o]->field = nullptr;
+			}
+		}
+	}
+}
+
 void Board::setNearTiles(int i, int o)
 {
 	//initialize tile's local pointers

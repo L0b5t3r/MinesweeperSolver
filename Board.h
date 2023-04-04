@@ -19,6 +19,7 @@ class Board
 		std::vector<std::vector<Tile*>> trueGrid; //true value of each tile, unknown to solver
 
 		void InitializeBoard(int h, int w, int n);
+		void ResetVisibleBoard();
 
 		bool click(int x, int y);
 		bool flag(int x, int y);

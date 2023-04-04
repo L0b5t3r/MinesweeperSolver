@@ -52,6 +52,8 @@ bool Solver::Run()
 							
 							if (t->state == TileState::marked) //count marked for next check
 								markedCount++; 
+
+							std::cout << "basic count marks" << std::endl;
 						}
 					}
 
@@ -71,6 +73,9 @@ bool Solver::Run()
 						{
 							curTile->removeAmbigField();
 						}
+
+						std::cout << "basic flag" << std::endl;
+
 						timeout = false; 
 						continue; //tile finished, no other checks can be made
 					}
@@ -91,6 +96,9 @@ bool Solver::Run()
 								}
 							}
 						}
+
+						std::cout << "basic clear" << std::endl;
+
 						curTile->state = TileState::finished;
 						if (curTile->field != nullptr)
 						{
@@ -105,8 +113,9 @@ bool Solver::Run()
 
 					//more complex cases when ambiguity for one can provide some info for a neighbooring tile
 
-					if (curTile->countNearUnknown() - (curTile->value - curTile->countNearFlagged() ) == 1) //one more tile than needed, ambiguous position
+					if (curTile->field == nullptr && curTile->countNearUnknown() - (curTile->value - curTile->countNearFlagged() ) == 1) //one more tile than needed, ambiguous position
 					{
+						std::cout << "create ambig at " << curTile->x << ", " << curTile->y << std::endl;
 						curTile->createAmbigField();
 						timeout = false;
 						continue;
@@ -135,8 +144,9 @@ bool Solver::Run()
 									}
 								}
 							}
+							std::cout << "matches: " << matchCount << std::endl;
 
-							if (matchCount == 2 && curTile->countNearUnknown() != 2)
+							if (matchCount == 2 && curTile->countNearUnknown() != 2) //there are more tiles than just in the field
 							{
 								//if ambiguous segment would complete flagged 
 								if (curTile->countNearFlagged() + 1 == curTile->value)
@@ -156,11 +166,14 @@ bool Solver::Run()
 											
 										}
 									}
+
+									std::cout << "ambig clear" << std::endl;
+
 									timeout = false;
 									continue;
 								}
-								else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value)
-								{
+								else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value && ambField->mineCount == 1) //do not do if 2 could be in 
+								{ 
 									//if remaining unknown + already flagged + the ambiguous fill, flag remaining unknown
 									for (Tile* t : curTile->near)
 									{
@@ -177,6 +190,9 @@ bool Solver::Run()
 											
 										}
 									}
+
+									std::cout << "ambig mark" << std::endl;
+
 									timeout = false;
 									continue;
 
@@ -214,6 +230,11 @@ bool Solver::Run()
 void Solver::CreateBoard(int h, int w, int n)
 {
 	board.InitializeBoard(h, w, n);
+}
+
+void Solver::ResetBoard()
+{
+	board.ResetVisibleBoard();
 }
 
 void Solver::PrintBoard()

@@ -45,9 +45,23 @@ int main()
             std::cout << "\n\nEnter 1 to run the same board or 2 to return to menu:   ";
             std::cin >> input;
 
-            if (input == 1)
+            while (input == 1)
             {
+                system("cls");
+                solver.ResetBoard();
+                result = solver.Run();
+                solver.PrintBoard();
+                if (result)
+                {
+                    std::cout << "Solver successfully cleared board" << std::endl;
+                }
+                else
+                {
+                    std::cout << "Solver was unsuccessfull" << std::endl;
+                }
 
+                std::cout << "\n\nEnter 1 to run the same board or 2 to return to menu:   ";
+                std::cin >> input;
             }
 
             break;
