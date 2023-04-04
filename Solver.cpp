@@ -53,7 +53,6 @@ bool Solver::Run()
 							if (t->state == TileState::marked) //count marked for next check
 								markedCount++; 
 
-							std::cout << "basic count marks" << std::endl;
 						}
 					}
 
@@ -122,90 +121,139 @@ bool Solver::Run()
 					}
 
 
-					//check for surrounding tiles with abiguous fields, then process if anything can be cleared or marked from it
-					for (Tile* nearT : curTile->near)
+
+					//perform safer operations first that might remove need for complex moves
+					if (timeoutCount >= 1)
 					{
-
-						if (nearT != nullptr && nearT->state == TileState::cleared && nearT->field != nullptr)
+						//check for surrounding tiles with abiguous fields, then process if anything can be cleared or marked from it
+						//check in tiles 2 away for cases where middle unknowns are important
+						for (Tile* t1 : curTile->near)
 						{
-							AmbigField* ambField = nearT->field;
-							std::vector<Tile*> inField = std::vector<Tile*>();
+							if (t1 == nullptr)
+								continue;
 
-							//check if current tile contains 2 tiles of the ambiguous field
-							int matchCount = 0;
-							for (Tile* adj : curTile->near) //probably could find more efficient method
+							for (Tile* nearT : t1->near)
 							{
-								for (Tile* fieldT : ambField->tiles)
+
+								if (nearT != nullptr && nearT->state == TileState::cleared && nearT->field != nullptr)
 								{
-									if (adj != nullptr && adj == fieldT) //pointer comparison could cause problems maybe
+									AmbigField* ambField = nearT->field;
+									std::vector<Tile*> inField = std::vector<Tile*>(); //tiles in the ambiguity field
+
+
+
+									//check if current tile contains 2 tiles of the ambiguous field
+									int matchCount = 0;
+									for (Tile* adj : curTile->near) //probably could find more efficient method
 									{
-										matchCount++;
-										inField.push_back(adj);
+										for (Tile* fieldT : ambField->tiles)
+										{
+											if (adj != nullptr && adj == fieldT) //pointer comparison could cause problems maybe
+											{
+												matchCount++;
+												inField.push_back(adj);
+											}
+										}
+									}
+									std::cout << "matches: " << matchCount << std::endl;
+
+
+
+
+									if (matchCount == 2 && curTile->countNearUnknown() != 2) //there are more tiles than just in the field
+									{
+										//if ambiguous segment would complete flagged 
+										if (curTile->countNearFlagged() + 1 == curTile->value)
+										{
+											//std::cout << "before trying to clear around " << curTile->x << ", " << curTile->y << std::endl;
+											//board.PrintVisibleBoard();
+											for (Tile* t : curTile->near)
+											{
+												bool isInField = false;
+												for (Tile* tF : inField)
+												{
+													if (t == tF)
+														isInField = true;
+												}
+
+
+												if (t != nullptr && !isInField && t->state == TileState::unknown) //if not part of ambigField
+												{
+													bool check = board.click(t->x, t->y);
+													if (!check) //if bomb clicked
+													{
+														std::cout << "Bomb falsly clicked at " << t->x << ", " << t->y << std::endl;
+														return false;
+													}
+
+												}
+											}
+
+											std::cout << "ambig clear" << std::endl;
+
+											timeout = false;
+											continue;
+										}
+										else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value && ambField->getMinesLeftCount() == 1) //do not do if 2 could be in 
+										{
+											//if remaining unknown + already flagged + the ambiguous fill, flag remaining unknown
+											for (Tile* t : curTile->near)
+											{
+
+												bool isInField = false;
+												for (Tile* tF : inField)
+												{
+													if (t == tF)
+														isInField = true;
+												}
+
+
+												//std::cout << "before trying to flag around " << curTile->x << ", " << curTile->y << std::endl;
+												//board.PrintVisibleBoard();
+												if (t != nullptr && !isInField && t->state == TileState::unknown) //if not part of ambigField
+												{
+													bool check = board.flag(t->x, t->y);
+													if (!check) //if not bomb flagged
+													{
+														std::cout << "Tile falsly flagged at " << t->x << ", " << t->y << std::endl;
+														return false;
+													}
+
+												}
+											}
+
+											std::cout << "ambig mark" << std::endl;
+
+											timeout = false;
+											continue;
+
+										}
+
+
+										//Guess between the two ambiguous tiles if failing to find action and nearly timing out
+										if (timeoutCount >= 4)
+										{
+											int choice = rand() % 2;
+											Tile* tileChoice = ambField->tiles[choice];
+
+											bool check = true;
+											choice = board.click(tileChoice->x, tileChoice->y);
+											
+											if (!check)
+											{
+												std::cout << "Incorrect guess clicked at: " << tileChoice->x << ", " << tileChoice->y << std::endl;
+												return false;
+											}
+											timeout = false;
+											continue;
+										}
+
+
 									}
 								}
 							}
-							std::cout << "matches: " << matchCount << std::endl;
-
-							if (matchCount == 2 && curTile->countNearUnknown() != 2) //there are more tiles than just in the field
-							{
-								//if ambiguous segment would complete flagged 
-								if (curTile->countNearFlagged() + 1 == curTile->value)
-								{
-									//std::cout << "before trying to clear around " << curTile->x << ", " << curTile->y << std::endl;
-									//board.PrintVisibleBoard();
-									for (Tile* t : curTile->near)
-									{
-										if (t != nullptr && t != inField[0] && t != inField[1] && t->state == TileState::unknown) //if not part of ambigField
-										{
-											bool check = board.click(t->x, t->y);
-											if (!check) //if bomb clicked
-											{
-												std::cout << "Bomb falsly clicked at " << t->x << ", " << t->y << std::endl;
-												return false;
-											}
-											
-										}
-									}
-
-									std::cout << "ambig clear" << std::endl;
-
-									timeout = false;
-									continue;
-								}
-								else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value && ambField->mineCount == 1) //do not do if 2 could be in 
-								{ 
-									//if remaining unknown + already flagged + the ambiguous fill, flag remaining unknown
-									for (Tile* t : curTile->near)
-									{
-										//std::cout << "before trying to flag around " << curTile->x << ", " << curTile->y << std::endl;
-										//board.PrintVisibleBoard();
-										if (t != nullptr && t != inField[0] && t != inField[1] && t->state == TileState::unknown) //if not part of ambigField
-										{
-											bool check = board.flag(t->x, t->y);
-											if (!check) //if not bomb flagged
-											{
-												std::cout << "Tile falsly flagged at " << t->x << ", " << t->y << std::endl;
-												return false;
-											}
-											
-										}
-									}
-
-									std::cout << "ambig mark" << std::endl;
-
-									timeout = false;
-									continue;
-
-								}
-
-							}
-
-
 						}
 					}
-
-
-
 				}
 			}
 		}
@@ -217,7 +265,7 @@ bool Solver::Run()
 		{
 			timeoutCount = 0;
 		}
-		if (timeoutCount >= 3) //give solver a few more cycles incase of weird cases maybe
+		if (timeoutCount >= 5) //give solver a few more cycles incase of weird cases maybe
 		{
 			std::cout << "Solver timed out, unable to take more steps" << std::endl;
 			return false;

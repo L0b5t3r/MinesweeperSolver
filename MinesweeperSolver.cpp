@@ -9,9 +9,9 @@ int main()
     bool result = false;
     bool exit = false;
 
-    int height = 10;
-    int width = 10;
-    int mines = 15;
+    int height = 14;
+    int width = 20;
+    int mines = 55;
 
     while (!exit)
     {
@@ -19,8 +19,9 @@ int main()
 
         system("cls");
         std::cout << "1: Start solving board with set/default parameters" << std::endl;
-        std::cout << "2: Set generation parameters" << std::endl;
-        std::cout << "3: Exit" << std::endl;
+        std::cout << "2: Attempt to solve board multiple times and total results" << std::endl;
+        std::cout << "3: Set generation parameters" << std::endl;
+        std::cout << "4: Exit" << std::endl;
         int input = 0;
 
         std::cout << std::endl << "Enter an option number to select:   " << std::endl;
@@ -29,6 +30,7 @@ int main()
         switch (input)
         {
         case 1:
+        {
             system("cls");
             solver.CreateBoard(height, width, mines);
             result = solver.Run();
@@ -63,9 +65,76 @@ int main()
                 std::cout << "\n\nEnter 1 to run the same board or 2 to return to menu:   ";
                 std::cin >> input;
             }
-
+        }
             break;
         case 2:
+        {
+            system("cls");
+            int times = 0;
+            std::cout << "Enter the number of times to run the board:   ";
+            std::cin >> times;
+
+            int successCount = 0;
+            int failCount = 0;
+
+
+            for (int i = 0; i < times; i++)
+            {
+                solver.CreateBoard(height, width, mines);
+                result = solver.Run();
+                if (result)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failCount++;
+                }
+            }
+
+            std::cout << std::endl << "Successful runs:\t\t" << successCount << std::endl;
+            std::cout << "Failed runs:\t\t" << failCount << std::endl;
+            double ratio = (double)successCount / (double)(successCount + failCount) * 100.0;
+            std::cout << "Success ratio:\t\t" << ratio << std::endl;
+
+            std::cout << "\n\nEnter 1 to run the same board for " << times << " times or 2 to return to menu : ";
+            std::cin >> input;
+
+            while (input == 1)
+            {
+                successCount = 0;
+                failCount = 0;
+
+                for (int i = 0; i < times; i++)
+                {
+                    solver.CreateBoard(height, width, mines);
+                    result = solver.Run();
+                    if (result)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        failCount++;
+                    }
+                }
+
+                std::cout << std::endl << "Successful runs:\t" << successCount << std::endl;
+                std::cout << "Failed runs:\t\t" << failCount << std::endl;
+                ratio = (double)successCount / (double)(successCount + failCount) * 100.0;
+                std::cout << "Success ratio:\t\t" << ratio << std::endl;
+
+
+                std::cout << "\n\nEnter 1 to run the same board or 2 to return to menu:   ";
+                std::cin >> input;
+            }
+
+
+            
+        }
+        break;
+        case 3:
+        {
             system("cls");
             std::cout << "Enter the height of the board:   ";
             std::cin >> height;
@@ -75,8 +144,9 @@ int main()
             system("cls");
             std::cout << "Enter the number of mines to place (too dense of a board can crash program) :   ";
             std::cin >> mines;
+        }
             break;
-        case 3:
+        case 4:
             exit = true;
             break;
         default:

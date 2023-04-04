@@ -17,5 +17,6 @@ class AmbigField //when a tile has has value - 1 unknown tiles, create field of 
 		AmbigField();
 		~AmbigField();
 
+		int getMinesLeftCount();
 };
 
