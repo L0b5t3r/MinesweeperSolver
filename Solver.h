@@ -20,5 +20,6 @@ class Solver
 		void CreateBoard(int h, int w, int n);
 		void ResetBoard();
 		void PrintBoard();
+		void PrintTrueBoard();
 };
 

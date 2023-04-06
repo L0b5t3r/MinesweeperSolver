@@ -36,7 +36,10 @@ bool Solver::Run()
 				Tile* curTile = board.visibleGrid[x][y];
 
 				if (board.remainingMines <= 0) //all mines found
+				{
+					std::cout << "Successful Run" << std::endl;
 					return true;
+				}
 
 				if (curTile->state == TileState::cleared)
 				{
@@ -73,7 +76,7 @@ bool Solver::Run()
 							curTile->removeAmbigField();
 						}
 
-						std::cout << "basic flag" << std::endl;
+						//std::cout << "basic flag" << std::endl;
 
 						timeout = false; 
 						continue; //tile finished, no other checks can be made
@@ -96,7 +99,7 @@ bool Solver::Run()
 							}
 						}
 
-						std::cout << "basic clear" << std::endl;
+						//std::cout << "basic clear" << std::endl;
 
 						curTile->state = TileState::finished;
 						if (curTile->field != nullptr)
@@ -114,7 +117,7 @@ bool Solver::Run()
 
 					if (curTile->field == nullptr && curTile->countNearUnknown() - (curTile->value - curTile->countNearFlagged() ) == 1) //one more tile than needed, ambiguous position
 					{
-						std::cout << "create ambig at " << curTile->x << ", " << curTile->y << std::endl;
+						//std::cout << "create ambig at " << curTile->x << ", " << curTile->y << std::endl;
 						curTile->createAmbigField();
 						timeout = false;
 						continue;
@@ -137,6 +140,7 @@ bool Solver::Run()
 
 								if (nearT != nullptr && nearT->state == TileState::cleared && nearT->field != nullptr)
 								{
+									nearT->field->update();
 									AmbigField* ambField = nearT->field;
 									std::vector<Tile*> inField = std::vector<Tile*>(); //tiles in the ambiguity field
 
@@ -155,7 +159,7 @@ bool Solver::Run()
 											}
 										}
 									}
-									std::cout << "matches: " << matchCount << std::endl;
+									//std::cout << "matches: " << matchCount << std::endl;
 
 
 
@@ -183,18 +187,19 @@ bool Solver::Run()
 													if (!check) //if bomb clicked
 													{
 														std::cout << "Bomb falsly clicked at " << t->x << ", " << t->y << std::endl;
+														ambField->printField();
 														return false;
 													}
 
 												}
 											}
 
-											std::cout << "ambig clear" << std::endl;
+											//std::cout << "ambig clear" << std::endl;
 
 											timeout = false;
 											continue;
 										}
-										else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value && ambField->getMinesLeftCount() == 1) //do not do if 2 could be in 
+										else if ((curTile->countNearUnknown() - 1) + curTile->countNearFlagged() == curTile->value && ambField->mineCount == 1) //do not do if 2 could be in 
 										{
 											//if remaining unknown + already flagged + the ambiguous fill, flag remaining unknown
 											for (Tile* t : curTile->near)
@@ -216,13 +221,14 @@ bool Solver::Run()
 													if (!check) //if not bomb flagged
 													{
 														std::cout << "Tile falsly flagged at " << t->x << ", " << t->y << std::endl;
+														ambField->printField();
 														return false;
 													}
 
 												}
 											}
 
-											std::cout << "ambig mark" << std::endl;
+											//std::cout << "ambig mark" << std::endl;
 
 											timeout = false;
 											continue;
@@ -236,9 +242,8 @@ bool Solver::Run()
 											int choice = rand() % 2;
 											Tile* tileChoice = ambField->tiles[choice];
 
-											bool check = true;
-											choice = board.click(tileChoice->x, tileChoice->y);
-											
+											bool check = board.click(tileChoice->x, tileChoice->y);
+
 											if (!check)
 											{
 												std::cout << "Incorrect guess clicked at: " << tileChoice->x << ", " << tileChoice->y << std::endl;
@@ -265,18 +270,40 @@ bool Solver::Run()
 		{
 			timeoutCount = 0;
 		}
-		if (timeoutCount >= 5) //give solver a few more cycles incase of weird cases maybe
+
+		if (timeoutCount >= 5) //if unable to find anything at all guess randomly
+		{
+			int randX = rand() % board.height;
+			int randY = rand() % board.width;
+			while (board.visibleGrid[randX][randY]->state != TileState::unknown)
+			{
+				randX = rand() % board.height;
+				randY = rand() % board.width;
+			}
+
+			bool check = board.click(randX, randY);
+			if (!check)
+			{
+				std::cout << "Incorrect random guess made at " << randX << ", " << randY << std::endl;
+				return false;
+			}
+
+			timeoutCount = 0;
+		}
+		else if (timeoutCount >= 6) //should not happen hopefully
 		{
 			std::cout << "Solver timed out, unable to take more steps" << std::endl;
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
 void Solver::CreateBoard(int h, int w, int n)
 {
+	if (board.height == 0)
+		board.~Board();
 	board.InitializeBoard(h, w, n);
 }
 
@@ -288,6 +315,10 @@ void Solver::ResetBoard()
 void Solver::PrintBoard()
 {
 	board.PrintVisibleBoard();
+}
+
+void Solver::PrintTrueBoard()
+{
 	board.PrintTrueBoard();
 }
 

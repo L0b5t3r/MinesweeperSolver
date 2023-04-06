@@ -92,7 +92,7 @@ int main()
                 }
             }
 
-            std::cout << std::endl << "Successful runs:\t\t" << successCount << std::endl;
+            std::cout << std::endl << "Successful runs:\t" << successCount << std::endl;
             std::cout << "Failed runs:\t\t" << failCount << std::endl;
             double ratio = (double)successCount / (double)(successCount + failCount) * 100.0;
             std::cout << "Success ratio:\t\t" << ratio << std::endl;

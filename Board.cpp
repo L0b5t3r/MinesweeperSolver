@@ -4,6 +4,9 @@
 
 Board::Board()
 {
+	height = 0;
+	width = 0;
+	totalMines = 0;
 	srand((unsigned)time(NULL));
 }
 
