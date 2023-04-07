@@ -67,6 +67,7 @@ bool Solver::Run()
 							if (!check) //bad flag
 							{
 								std::cout << "Tile falsly flagged at " << t->x << ", " << t->y << std::endl;
+								board.PrintFailDebug(t->x, t->y);
 								return false;
 							}
 						}
@@ -94,6 +95,7 @@ bool Solver::Run()
 								if (!check) //if bomb clicked
 								{
 									std::cout << "Bomb falsly clicked at " << t->x << ", " << t->y << std::endl;
+									board.PrintFailDebug(t->x, t->y);
 									return false;
 								}
 							}
@@ -126,7 +128,7 @@ bool Solver::Run()
 
 
 					//perform safer operations first that might remove need for complex moves
-					if (timeoutCount >= 1)
+					if (timeoutCount >= 2)
 					{
 						//check for surrounding tiles with abiguous fields, then process if anything can be cleared or marked from it
 						//check in tiles 2 away for cases where middle unknowns are important
@@ -188,6 +190,7 @@ bool Solver::Run()
 													{
 														std::cout << "Bomb falsly clicked at " << t->x << ", " << t->y << std::endl;
 														ambField->printField();
+														board.PrintFailDebug(t->x, t->y);
 														return false;
 													}
 
@@ -222,6 +225,7 @@ bool Solver::Run()
 													{
 														std::cout << "Tile falsly flagged at " << t->x << ", " << t->y << std::endl;
 														ambField->printField();
+														board.PrintFailDebug(t->x, t->y);
 														return false;
 													}
 
@@ -250,6 +254,7 @@ bool Solver::Run()
 												return false;
 											}
 											timeout = false;
+											timeoutCount = 0; //do early to prevent repeat guesses
 											continue;
 										}
 
@@ -290,7 +295,7 @@ bool Solver::Run()
 
 			timeoutCount = 0;
 		}
-		else if (timeoutCount >= 6) //should not happen hopefully
+		else if (timeoutCount >= 6) //should not happen 
 		{
 			std::cout << "Solver timed out, unable to take more steps" << std::endl;
 			return false;

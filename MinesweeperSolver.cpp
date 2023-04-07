@@ -9,9 +9,9 @@ int main()
     bool result = false;
     bool exit = false;
 
-    int height = 14;
-    int width = 20;
-    int mines = 55;
+    int height = 16;
+    int width = 30;
+    int mines = 99;
 
     while (!exit)
     {

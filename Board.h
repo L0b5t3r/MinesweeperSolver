@@ -29,5 +29,7 @@ class Board
 		void PrintTrueBoard();
 		void PrintVisibleBoard();
 
+		void PrintFailDebug(int x, int y);
+
 };
 

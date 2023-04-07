@@ -289,6 +289,61 @@ void Board::PrintVisibleBoard()
 	}
 }
 
+void Board::PrintFailDebug(int x, int y) //print square of tiles where failure occured for easy viewing
+{
+	for (int i = x - 2; i <= x + 2; i++)
+	{
+		for (int o = y - 2; o <= y + 2; o++)
+		{
+			if (i < height && i >= 0 && o < width && o >= 0)
+			{
+				switch (visibleGrid[i][o]->state)
+				{
+				case TileState::unknown:
+					std::cout << " x ";
+					break;
+				case TileState::marked:
+					std::cout << "\x1B[31m m \x1B[0m"; //red
+					break;
+				case TileState::cleared:
+				case TileState::finished:
+					switch (trueGrid[i][o]->value)
+					{
+					case 0:
+						std::cout << "\x1B[97m 0 \x1B[0m"; //white
+						break;
+					case 1:
+						std::cout << "\x1B[96m 1 \x1B[0m"; //cyan
+						break;
+					case 2:
+						std::cout << "\x1B[92m 2 \x1B[0m"; //bright green
+						break;
+					case 3:
+						std::cout << "\x1B[91m 3 \x1B[0m"; //bright red
+						break;
+					case 4:
+						std::cout << "\x1B[34m 4 \x1B[0m"; //blue
+						break;
+					case 5:
+						std::cout << "\x1B[32m 5 \x1B[0m"; //green
+						break;
+					case 6:
+						std::cout << "\x1B[35m 6 \x1B[0m"; //magenta
+						break;
+					case 7:
+						std::cout << "\x1B[94m 7 \x1B[0m"; //bright blue
+						break;
+					case 8:
+						std::cout << "\x1B[33m 8 \x1B[0m"; //yellow
+						break;
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+
 Board::~Board()
 {
 	for (int i = 0; i < height; i++)
