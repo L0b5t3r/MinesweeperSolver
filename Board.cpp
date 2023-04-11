@@ -197,7 +197,7 @@ void Board::PrintTrueBoard()
 			switch (trueGrid[i][o]->value)
 			{
 			case -1:
-				std::cout << "\x1B[31m m \x1B[0m"; //red
+				std::cout << "\x1B[31m M \x1B[0m"; //red
 				break;
 			case 0:
 				std::cout << "\x1B[97m 0 \x1B[0m"; //white
@@ -244,10 +244,10 @@ void Board::PrintVisibleBoard()
 			switch (visibleGrid[i][o]->state)
 			{
 			case TileState::unknown:
-				std::cout << " x ";
+				std::cout << " X ";
 				break;
 			case TileState::marked:
-				std::cout << "\x1B[31m m \x1B[0m"; //red
+				std::cout << "\x1B[31m M \x1B[0m"; //red
 				break;
 			case TileState::cleared:
 			case TileState::finished:
@@ -289,6 +289,55 @@ void Board::PrintVisibleBoard()
 	}
 }
 
+std::string Board::GetVisibleBoard()
+{
+	std::string result = "";
+	for (int i = 0; i < height; i++)
+	{
+		for (int o = 0; o < width; o++)
+		{
+			switch (visibleGrid[i][o]->state)
+			{
+			case TileState::unknown:
+				result += "X";
+				break;
+			case TileState::marked:
+				result += "M";
+				break;
+			case TileState::cleared:
+			case TileState::finished:
+				result += trueGrid[i][o]->value;
+				break;
+			}
+			//result += " ";
+		}
+		//result += "\n";
+	}
+	return result;
+}
+
+std::string Board::GetTrueBoard()
+{
+	std::string result = "";
+	for (int i = 0; i < height; i++)
+	{
+		for (int o = 0; o < width; o++)
+		{
+			if (trueGrid[i][o]->value == -1)
+			{
+				result += "M";
+			}
+			else
+			{
+				result += trueGrid[i][o]->value;
+			}
+			//result += " ";
+		}
+		//result += "\n";
+	}
+	return result;
+}
+
 void Board::PrintFailDebug(int x, int y) //print square of tiles where failure occured for easy viewing
 {
 	for (int i = x - 2; i <= x + 2; i++)
@@ -300,10 +349,10 @@ void Board::PrintFailDebug(int x, int y) //print square of tiles where failure o
 				switch (visibleGrid[i][o]->state)
 				{
 				case TileState::unknown:
-					std::cout << " x ";
+					std::cout << " X ";
 					break;
 				case TileState::marked:
-					std::cout << "\x1B[31m m \x1B[0m"; //red
+					std::cout << "\x1B[31m M \x1B[0m"; //red
 					break;
 				case TileState::cleared:
 				case TileState::finished:

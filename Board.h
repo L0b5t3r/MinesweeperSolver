@@ -1,6 +1,7 @@
 #pragma once
 #include "Tile.h"
 #include <vector>
+#include <string>
 class Board
 {
 	private:
@@ -28,6 +29,9 @@ class Board
 
 		void PrintTrueBoard();
 		void PrintVisibleBoard();
+
+		std::string GetVisibleBoard();
+		std::string GetTrueBoard();
 
 		void PrintFailDebug(int x, int y);
 

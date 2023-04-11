@@ -1,3 +1,5 @@
+#define SolverAPI __declspec(dllexport)
+
 #pragma once
 #include "Board.h"
 #include "AmbigField.h"
@@ -21,5 +23,8 @@ class Solver
 		void ResetBoard();
 		void PrintBoard();
 		void PrintTrueBoard();
+
+		std::string GetVisibleBoard();
+		std::string GetTrueBoard();
 };
 

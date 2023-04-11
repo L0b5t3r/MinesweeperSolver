@@ -327,4 +327,14 @@ void Solver::PrintTrueBoard()
 	board.PrintTrueBoard();
 }
 
+std::string Solver::GetVisibleBoard()
+{
+	return board.GetVisibleBoard();
+}
+
+std::string Solver::GetTrueBoard()
+{
+	return board.GetTrueBoard();
+}
+
 Solver::~Solver() {}
