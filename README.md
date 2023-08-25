@@ -1,5 +1,5 @@
 # MinesweeperSolver
-This is a program that generates a minesweeper board based on default or user specified parameters and then attempts to solve it in a similar method to how a human would approach it. Currently the method used results in a ~25% success rate on expert preset boards (16 x 30, 99 mines)
+This is a program that generates a minesweeper board based on default or user specified parameters and then attempts to solve it in a similar method to how a human would approach it. Currently the method used results in a ~30% success rate on expert preset boards (16 x 30, 99 mines)
 
 
 # How to use
